@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\apiController;
+use App\Http\Controllers\SomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +18,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/valores/fecha1={fecha1}&fecha2={fecha2}', function($fecha1, $fecha2){
+    return "Hola, estos son los valores " . $fecha1 . "; " . $fecha2;
+});
+
+Route::get('/generos', [apiController::class, 'generos']);
+
+Route::get('/create', [apiController::class, 'create']);
+Route::post('/store', [apiController::class, 'store']);
+Route::resource('/some', SomeController::class);
+//Route::post('/register', [apiController::class, 'register']);
