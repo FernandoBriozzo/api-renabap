@@ -16,7 +16,7 @@ use App\Http\Controllers\SomeController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return "<h1>Hello World!</h1>";
 });
 
 Route::get('/valores/fecha1={fecha1}&fecha2={fecha2}', function($fecha1, $fecha2){
