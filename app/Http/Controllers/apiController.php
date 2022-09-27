@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Genre;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class apiController extends Controller
 {
@@ -49,12 +50,6 @@ class apiController extends Controller
         return $request->user();
     }
 
-    public function generos()
-    {
-        $generos = Genre::all('nombre');
-        return $generos->toJson();
-    }
-
     public function create()
     {
         return view('form');
@@ -76,10 +71,59 @@ class apiController extends Controller
             unset($ch);
             var_dump($response);
             var_dump($request->all());
-            $filename = "../storage/app/archivos/resultado.txt";
+            $filename = "../storage/app/archivos/resultado-" . date("Y-m-d-H-i-s") . ".txt";
             $fileHandler = fopen($filename, 'w') or die("can't open file");
             fwrite($fileHandler, $response);
             fclose($fileHandler);
         }
+    }
+
+    public function apiGuardar(Request $request)
+    {
+        if (!isset($request['api-url'])) {
+            return response()->json([
+                'resultado' => 'Campo api-url no definido'
+            ]);
+            die();
+        }
+        $archivoNombre = "resultado-" . date("Y-m-d-H-i-s") . ".txt";
+        if (isset($request["api-url"])) {
+            try{
+            $url = $request["api-url"];
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            if (strlen($response) == 0) {
+                throw throw new Exception('Resultado vacío.');
+            }
+            unset($ch);
+            $filename = "../storage/app/archivos/" . $archivoNombre;
+            $fileHandler = fopen($filename, 'w') or die("can't open file");
+            fwrite($fileHandler, $response);
+            fclose($fileHandler);
+            }
+            catch (Exception $e) {
+                return response()->json([
+                    'resultado' => 'Error: ' . $e->getMessage()
+                ]);
+                die();
+            }
+        }
+        return response()->json([
+            'resultado' => 'Archivo creado exitosamente con el nombre: ' . $archivoNombre
+        ]);
+    }
+
+    public function webLogin(){
+        return view('login');
+    }
+
+    public function webAuth(Request $request) {
+        if (!Auth::attempt($request->only('name', 'password'))){
+            return back()->with('error','Datos de login inválidos');
+        }
+        $user = User::where('name', $request['name'])->firstOrFail();
+        $token = $user->createToken('auth_token')->plainTextToken;
+        return "Token creado con éxito: " . $token;
     }
 }
