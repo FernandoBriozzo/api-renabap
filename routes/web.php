@@ -14,6 +14,9 @@ use App\Http\Controllers\SomeController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/asdf', function(){
+    return __DIR__;
+});
 
 Route::get('/', function () {
     return "<h1>Hello World!</h1>";
