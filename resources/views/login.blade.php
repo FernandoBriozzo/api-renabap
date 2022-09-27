@@ -18,7 +18,7 @@
         <input type="text" name="name" id="name">
         <label for="password">Ingrese la contraseña:</label>
         <input type="password" name="password" id="password">
-        <input type="submit" name="uploadBtn" value="Guardar">
+        <input type="submit" name="uploadBtn" value="Ingresar">
     </form>
   </body>
 </html>
