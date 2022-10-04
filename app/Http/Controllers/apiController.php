@@ -58,7 +58,8 @@ class apiController extends Controller
     public function store(Request $request)
     {
         echo "aca viene del formulario<br>";
-        $postFields = [];
+        $postFields = $request->postFields;
+        dd($postFields);
         /* foreach ($request["postfields"] as $myfields) {
             $postFields += array($myfields["campo"] => $myfields["valor"]);
         } */
@@ -86,12 +87,28 @@ class apiController extends Controller
             ]);
             die();
         }
+        if (isset($request->_headers)) {
+            $headers= [];
+            $header = json_decode($request->_headers);
+            foreach ($header as $key => $field) {
+                $headers[$key] = $field;
+            }
+        }
+        if (isset($request->_post_fields)) {
+            $post_fields= [];
+            $postFields = json_decode($request->_post_fields);
+            foreach ($postFields as $key => $field) {
+                $post_fields[$key] = $field;
+            }
+        }
         $archivoNombre = "resultado-" . date("Y-m-d-H-i-s") . ".txt";
         if (isset($request["api-url"])) {
             try{
             $url = $request["api-url"];
             $ch = curl_init($url);
+            if (isset($headers)) {curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);}
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            if (isset($post_fields)) {curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_fields));}
             $response = curl_exec($ch);
             if (strlen($response) == 0) {
                 throw throw new Exception('Resultado vacío.');
